@@ -18,6 +18,7 @@ const commentCreate = async function(req,res){
     body.postId = post;
     body.user = req.userId;
     let create = await commentModel.create(body);
+    await postModel.findOneAndUpdate({_id:post},{$set:{comment:create._id}},{new:true,upsert:true})
     let commentObj = {
         commentId : create._id,
         comment : create.comment

@@ -17,7 +17,10 @@ router.post("/api/posts",authenticate.auth,postController.posts)
 router.delete("/api/posts/:Id",authenticate.auth,postController.deletePost)
 router.post("/api/like/:Id",authenticate.auth,postController.like)
 router.post("/api/unlike/:Id",authenticate.auth,postController.unlike)
+router.get("/api/posts/:Id",authenticate.auth,postController.getPostDetails)
+router.get("/api/all_posts",authenticate.auth,postController.getAllPosts)
 
 router.post("/api/comment/:Id",authenticate.auth,commentController.commentCreate)
+
 
 module.exports = router

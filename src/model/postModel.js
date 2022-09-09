@@ -7,6 +7,11 @@ const postSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
+    comment : {
+        type: ObjectId,
+        ref: 'comment',
+        required: true
+    },
     Title : { 
         type: String, 
         required: true, 

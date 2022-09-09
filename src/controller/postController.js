@@ -1,4 +1,5 @@
 const postModel = require("../model/postModel");
+const commentModel = require("../model/commentModel")
 const {isValid,isValidObjectId} = require("../validator/validator");
 const mongoose = require('mongoose')
 
@@ -95,4 +96,31 @@ const unlike = async function(req,res){
     }
 }
 
-module.exports = {posts,deletePost,like,unlike}
+const getPostDetails = async function(req,res){
+ try{
+  let postId = req.params.Id
+  let find = await postModel.findById(postId);
+  if(!find){
+    return res.status(400).send({status:false,message:"post is not found"})
+  }
+  if(find.isDeleted == true){
+    return res.status(400).send({status:false,message:"This post is deleted"})
+  }
+  let comment = await commentModel.find({postId:postId}).select('comment');
+  let Obj = {
+      postId : postId,
+      userId : find.user,
+      likes : find.like.length,
+      comments : [comment]
+  }
+  return res.status(400).send({status:true,message:"getting all post details",data:Obj})
+ } catch(error){
+  return res.status(500).send({status:false, message:error.message})
+ }
+}
+
+const getAllPosts = async function(req,res){
+   let posts = await postModel.find({user:req.userId})
+}
+
+module.exports = {posts,deletePost,like,unlike,getPostDetails,getAllPosts}
