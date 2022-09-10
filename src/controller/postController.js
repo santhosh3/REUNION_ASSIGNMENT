@@ -129,20 +129,24 @@ const getPostDetails = async function(req,res){
 }
 
 const getAllPosts = async function(req,res){
-   let posts = await postModel.find({user:req.userId,isDeleted:false}).sort({time:1})
-   let array = []
-   for(let i = 0; i < posts.length; i++){
-    let Obj = {
-      postId : posts[i]._id,
-      Title : posts[i].Title,
-      Description : posts[i].Description,
-      createdAt : posts[i].createdAt.toLocaleString(),
-      comments : await commentModel.find({postId:posts[i]}).select('comment'),
-      likes : posts[i].like.length,
-     }
-     array.push(Obj)
-   }
-   return res.status(200).send({status:true, data:array})
+ try {
+  let posts = await postModel.find({user:req.userId,isDeleted:false}).sort({time:1})
+  let array = []
+  for(let i = 0; i < posts.length; i++){
+   let Obj = {
+     postId : posts[i]._id,
+     Title : posts[i].Title,
+     Description : posts[i].Description,
+     createdAt : posts[i].createdAt.toLocaleString(),
+     comments : await commentModel.find({postId:posts[i]}).select('comment'),
+     likes : posts[i].like.length,
+    }
+    array.push(Obj)
+  }
+  return res.status(200).send({status:true, data:array})
+ } catch (error) {
+   return res.status(500).send({status:false, message:error.message})
+ }
 }
 
 module.exports = {posts,deletePost,like,unlike,getPostDetails,getAllPosts}
