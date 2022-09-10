@@ -4,7 +4,7 @@
   "description": "creating social media app",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "node src/index",
     "server": "nodemon src/index"
   },
   "keywords": [
