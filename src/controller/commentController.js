@@ -6,7 +6,7 @@ const mongoose = require('mongoose')
 const commentCreate = async function(req,res){
  try {
     let post = req.params.Id
-    let find = await postModel.findById(post);
+    let find = await postModel.findOne({postId:post, isDeleted:false});
     if(!find){
       return res.status(400).send({status:false,message:"postId is not found"})
     }
@@ -18,7 +18,6 @@ const commentCreate = async function(req,res){
     body.postId = post;
     body.user = req.userId;
     let create = await commentModel.create(body);
-    await postModel.findOneAndUpdate({_id:post},{$set:{comment:create._id}},{new:true,upsert:true})
     let commentObj = {
         commentId : create._id,
         comment : create.comment

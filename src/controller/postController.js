@@ -9,6 +9,9 @@ const posts = async function(req,res){
     if(Object.keys(body).length == 0){
        return res.status(400).send({status:false,message:"please provide data to post"})
     }
+    if(body.isDeleted == true){
+      return res.status(400).send({status:false,message:"Bad request"})
+    }
     let {Title,Description} = body
     if(!isValid(Title)){
         return res.status(400).send({status:false,message:"Title should be present"})
@@ -42,6 +45,9 @@ const deletePost = async function(req,res){
   }
   if(post.user != req.userId){
     return res.status(400).send({status:false,message:"You are not authorised to delete that post"})
+  }
+  if(post.isDeleted == true){
+    return res.status(400).send({status:false,message:"This post is already deleted"})
   }
   await postModel.findOneAndUpdate({_id:postId},{$set:{isDeleted:true,deletedAt:new Date()}},{new:true})
   return res.status(200).send({status:false,message:"post deleted successfully"})
@@ -99,19 +105,22 @@ const unlike = async function(req,res){
 const getPostDetails = async function(req,res){
  try{
   let postId = req.params.Id
-  let find = await postModel.findById(postId);
+  let find = await postModel.findOne({_id:postId,isDeleted:false});
   if(!find){
     return res.status(400).send({status:false,message:"post is not found"})
   }
   if(find.isDeleted == true){
     return res.status(400).send({status:false,message:"This post is deleted"})
   }
+
   let comment = await commentModel.find({postId:postId}).select('comment');
   let Obj = {
       postId : postId,
       userId : find.user,
+      Title : find.Title,
+      Description : find.Description,
       likes : find.like.length,
-      comments : [comment]
+      comments : comment
   }
   return res.status(400).send({status:true,message:"getting all post details",data:Obj})
  } catch(error){
@@ -120,7 +129,20 @@ const getPostDetails = async function(req,res){
 }
 
 const getAllPosts = async function(req,res){
-   let posts = await postModel.find({user:req.userId})
+   let posts = await postModel.find({user:req.userId,isDeleted:false}).sort({time:1})
+   let array = []
+   for(let i = 0; i < posts.length; i++){
+    let Obj = {
+      postId : posts[i]._id,
+      Title : posts[i].Title,
+      Description : posts[i].Description,
+      createdAt : posts[i].createdAt.toLocaleString(),
+      comments : await commentModel.find({postId:posts[i]}).select('comment'),
+      likes : posts[i].like.length,
+     }
+     array.push(Obj)
+   }
+   return res.status(200).send({status:true, data:array})
 }
 
 module.exports = {posts,deletePost,like,unlike,getPostDetails,getAllPosts}

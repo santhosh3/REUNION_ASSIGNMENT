@@ -71,13 +71,13 @@ const follow = async function(req,res){
       }  
       let follower = findData.followers.includes(req.userId)
       if(follower){
-        return res.send({status:false,message:"you already following that user"})
+        return res.status(400).send({status:false,message:`you already following ${findData.userName}`})
       }
       else {
         await userModel.findOneAndUpdate({_id:userId},{$push:{followers:req.userId}},{new:true})
         await userModel.findOneAndUpdate({_id:req.userId},{$push:{following:userId}},{new:true})
       }
-      return res.send({status:true, message:"Now you are following user"})
+      return res.status(200).send({status:true, message:`Now you are following ${findData.userName}`})
 
   } catch (error) {
     return res.status(500).send({status:false,message:error.message})
@@ -94,9 +94,9 @@ const unfollow = async(req,res) => {
         await userModel.findOneAndUpdate({_id:userId},{$pull:{followers:req.userId}},{new:true})
         await userModel.findOneAndUpdate({_id:req.userId},{$pull:{following:userId}},{new:true})
     }else{
-        return res.send({status:false,message:"you are not following that user"})
+        return res.status(400).send({status:false,message:`you are not following ${findData.userName}`})
     }
-    return res.send({status:true, message:"successful"})
+    return res.status(200).send({status:true, message:`Now you are not following ${findData.userName}`})
 }
 
 const getUser = async function(req,res){
@@ -107,7 +107,7 @@ const getUser = async function(req,res){
         No_of_followers : user.followers.length,
         No_of_following: user.following.length
     }
-    return res.status(200).send(registerData)
+    return res.status(200).send({status:true,message:"user data",data:registerData})
     } catch (error) {
         return res.status(500).send({status:false,message:error.message})
     }
@@ -117,7 +117,7 @@ const getUser = async function(req,res){
 const getDetails = async function(req,res){
   let a = req.body.userId;
   let b = await userModel.findById(a);
-  return res.send(b)
+  return res.send({status:true,user:b})
 }
 
 module.exports = {register,login,follow,getDetails,unfollow,getUser}

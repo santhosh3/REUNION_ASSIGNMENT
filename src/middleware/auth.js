@@ -9,12 +9,15 @@ const jwt = require('jsonwebtoken');
       if (!token) {
         return res.status(401).send({ status: false, msg: "Token must be present" });
       }
-      let decodedToken = jwt.verify(token, "REUNION" )      
-      if(decodedToken){ 
+      let decodedToken = jwt.verify(token, "REUNION" )   
+      if(!decodedToken){
+        return res.status(400).send({status:false, message:"please enter valid token"})
+      }   
+      else{ 
       req.userId = decodedToken.userId;
       console.log(req.userId)
       next();       
-      }                                                       
+      }                                            
     }
     catch (error) {
       res.status(500).send({ status: false, messageg: error.message });

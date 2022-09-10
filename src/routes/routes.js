@@ -11,7 +11,6 @@ router.post("/api/authenticate",userController.login)
 router.post("/api/follow/:Id",authenticate.auth, userController.follow)
 router.post("/api/unfollow/:Id",authenticate.auth, userController.unfollow)
 router.get("/api/user",authenticate.auth, userController.getUser)
-router.get("/get",userController.getDetails)
 
 router.post("/api/posts",authenticate.auth,postController.posts)
 router.delete("/api/posts/:Id",authenticate.auth,postController.deletePost)
