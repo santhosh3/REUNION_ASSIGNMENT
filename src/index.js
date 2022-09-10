@@ -16,7 +16,7 @@ mongoose.connect(process.env.CLUSTER,{useNewUrlParser: true})
 app.use('/', route);
 
 app.get('/',(req,res) => {
-    res.send('welocome')
+    res.send('welcome')
 })
 
 
