@@ -1,6 +1,7 @@
 const commentModel = require("../model/commentModel");
 const postModel = require("../model/postModel");
 const {isValid,isValidObjectId} = require("../validator/validator");
+//isvalidObjectId is not validOne
 const mongoose = require('mongoose')
 
 const commentCreate = async function(req,res){
